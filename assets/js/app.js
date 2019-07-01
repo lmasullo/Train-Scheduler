@@ -118,7 +118,7 @@ $(document).ready(() => {
         tdFreq.html(doc.data().frequency);
 
         //Calculate the next arrival
-        //Get the first arrival
+        //Get the first arrival, it doesn't have the day, just the time
         let timeStart = doc.data().time;
         //console.log(timeStart);
 
