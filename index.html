@@ -1,123 +1,145 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
 
-<head>
-  <!-- Required meta tags -->
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Bootstrap CSS -->
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+      integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+      crossorigin="anonymous"
+    />
 
-  <!-- Bootstrap CSS -->
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="assets/css/styles.css" />
 
-  <link rel="stylesheet" href="assets/css/styles.css">
+    <title>Train Scheduler</title>
+  </head>
 
-  <title>Train Scheduler</title>
-</head>
+  <body>
+    <!-- Main container div -->
+    <div class="container">
+      <!-- Jombotron div -->
+      <div class="jumbotron text-center">
+        <h1 class="display-4">Anytime is Train Time</h1>
+        <p class="lead">Choo Choo. Chee Chee.</p>
+      </div>
 
-<body>
-  <!-- Main container div -->
-  <div class="container">
-    <!-- Jombotron div -->
-    <div class="jumbotron text-center">
-      <h1 class="display-4">Anytime is Train Time</h1>
-      <p class="lead">Choo Choo. Chee Chee.</p>
+      <!-- Train Schedule Card div -->
+      <div class="card">
+        <div class="card-header">
+          Current Train Schedule
+        </div>
+        <div class="card-body">
+          <!-- List of Trains Table -->
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th scope="col">Train Name</th>
+                <th scope="col">Destinatiom</th>
+                <th scope="col">Frequency (min)</th>
+                <th scope="col">Next Arrival</th>
+                <th scope="col">Minutes Away</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+          <!-- End Card Body -->
+        </div>
+        <!-- End Train Div -->
+      </div>
+
+      <!-- Add Train Card Div -->
+      <div class="card">
+        <div class="card-header">
+          Add Train
+        </div>
+        <div class="card-body">
+          <!-- Add Train Form -->
+          <form>
+            <div class="form-group">
+              <label for="trainName">Train Name</label>
+              <input
+                type="text"
+                id="txtName"
+                class="form-control"
+                id="trainName"
+                placeholder="Enter Train Name"
+              />
+            </div>
+            <div class="form-group">
+              <label for="destination">Destination</label>
+              <input
+                type="text"
+                id="txtDest"
+                class="form-control"
+                id="destination"
+                placeholder="Enter the Train's Destination"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="trainTime">First Train Time (e.g. 11:00 AM)</label>
+              <input
+                type="time"
+                id="txtTime"
+                class="form-control"
+                id="trainTime"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="frequency">Frequency (min)</label>
+              <input
+                type="text"
+                id="txtFreq"
+                class="form-control"
+                id="frequency"
+                placeholder="Enter How Often the Train Arrives"
+              />
+            </div>
+            <button type="submit" id="btnSubmit" class="btn btn-primary">
+              Submit
+            </button>
+          </form>
+          <!-- End Card Body -->
+        </div>
+        <!-- End Add Train Card -->
+      </div>
+      <!-- End Main Div -->
     </div>
 
-    <!-- Train Schedule Card div -->
-    <div class="card">
-      <div class="card-header">
-        Current Train Schedule
-      </div>
-      <div class="card-body">
-        <!-- List of Trains Table -->
-        <table class="table table-striped">
-          <thead>
-            <tr>
-              <th scope="col">#</th>
-              <th scope="col">First</th>
-              <th scope="col">Last</th>
-              <th scope="col">Handle</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <th scope="row">1</th>
-              <td>Mark</td>
-              <td>Otto</td>
-              <td>@mdo</td>
-            </tr>
-            <tr>
-              <th scope="row">2</th>
-              <td>Jacob</td>
-              <td>Thornton</td>
-              <td>@fat</td>
-            </tr>
-            <tr>
-              <th scope="row">3</th>
-              <td>Larry</td>
-              <td>the Bird</td>
-              <td>@twitter</td>
-            </tr>
-          </tbody>
-        </table>
-        <!-- End Card Body -->
-      </div>
-      <!-- End Train Div -->
-    </div>
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script
+      src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+      integrity="sha256-pasqAKBDmFT4eHoN2ndd6lN370kFiGUFyTiUHWhU7k8="
+      crossorigin="anonymous"
+    ></script>
 
-    <!-- Add Train Card Div -->
-    <div class="card">
-      <div class="card-header">
-        Add Train
-      </div>
-      <div class="card-body">
-        <!-- Add Train Form -->
-        <form>
-          <div class="form-group">
-            <label for="trainName">Train Name</label>
-            <input type="text" id="txtName" class="form-control" id="trainName" placeholder="Enter Train Name">
-          </div>
-          <div class="form-group">
-            <label for="destination">Destination</label>
-            <input type="text" id="txtDest" class="form-control" id="destination"
-              placeholder="Enter the Train's Destination">
-          </div>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+      integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+      integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+      crossorigin="anonymous"
+    ></script>
 
-          <div class="form-group">
-            <label for="trainTime">First Train Time (e.g. 11:00 AM)</label>
-            <input type="time" id="txtTime" class="form-control" id="trainTime">
-          </div>
+    <!-- Moment.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
 
-          <div class="form-group">
-            <label for="frequency">Frequency (min)</label>
-            <input type="text" id="txtFreq" class="form-control" id="frequency"
-              placeholder="Enter How Often the Train Arrives">
-          </div>
-          <button type="submit" id="btnSubmit" class="btn btn-primary">Submit</button>
-        </form>
-        <!-- End Card Body -->
-      </div>
-      <!-- End Add Train Card -->
-    </div>
-    <!-- End Main Div -->
-  </div>
-
-  <!-- Optional JavaScript -->
-  <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-  <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
-    integrity="sha256-pasqAKBDmFT4eHoN2ndd6lN370kFiGUFyTiUHWhU7k8=" crossorigin="anonymous"></script>
-
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
-    integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous">
-  </script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
-    integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous">
-  </script>
-
-  <script src="https://www.gstatic.com/firebasejs/6.2.4/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/6.2.4/firebase-firestore.js"></script>
-  <!-- 
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/6.2.4/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/6.2.4/firebase-firestore.js"></script>
+    <!-- 
   <script>
     // Your web app's Firebase configuration
     var firebaseConfig = {
@@ -133,8 +155,7 @@
     firebase.initializeApp(firebaseConfig);
   </script> -->
 
-  <!-- Custom js -->
-  <script src="assets/js/app.js"></script>
-</body>
-
+    <!-- Custom js -->
+    <script src="assets/js/app.js"></script>
+  </body>
 </html>
