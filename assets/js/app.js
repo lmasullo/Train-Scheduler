@@ -27,7 +27,7 @@ $(document).ready(() => {
   let trainFreq = 0;
 
   // Counter for firebase return querySnapShot
-  let counter = 0;
+  //let counter = 0;
 
   
 
@@ -164,6 +164,14 @@ $(document).ready(() => {
            console.log("New Arrival Time: " + newArrivalTime);
            tdArr.html(newArrivalTime);
            //Recalculate minutes away!!!!!!!!!!Need a function, don't repeat code
+           //Get mins away
+           //let awayNew = moment(newArrivalTime).fromNow(); 
+           //console.log(awayNew);
+           
+           //Display the Minutes Away
+           //tdMins.html(away);
+
+
          }else{
            console.log("Arrival is in Future"); //Can delete this???????    
          }
@@ -192,3 +200,4 @@ $(document).ready(() => {
 // 5. Calculate next arrival time, by getting the 'time' from the db and add frequency mins to that time using moment.js
 // 6. Calculate Minutes away look at Arrival Time calculated and current time and get difference using moment.js
 // 7. If Minutes away is <=0, update with next arrival time
+// 8. Refresh page every minute
