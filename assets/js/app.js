@@ -29,6 +29,8 @@ $(document).ready(() => {
   // Counter for firebase return querySnapShot
   let counter = 0;
 
+  
+
   // Functions
   //* **********************************************
 
@@ -68,13 +70,6 @@ $(document).ready(() => {
     trainArrival = $('#txtTime')
       .val()
       .trim();
-    // Convert Time into the correct format
-    // Get today
-    const today = moment().format('L');
-    // console.log(today);
-    trainArrival = `${today} ${trainArrival}`;
-    console.log(trainArrival);
-
     trainFreq = $('#txtFreq')
       .val()
       .trim();
@@ -87,16 +82,6 @@ $(document).ready(() => {
     // Call the addTrain function
     addTrain(trainName, trainDest, trainArrival, trainFreq);
   });
-
-  function render() {
-    // <tr>
-    //   <th scope="row">1</th>
-    //   <td>Mark</td>
-    //   <td>Otto</td>
-    //   <td>@mdo</td>
-    //   <td>5</td>
-    // </tr>;
-  }
 
   // Main Processes
   //* ******************************************************
@@ -115,40 +100,86 @@ $(document).ready(() => {
     .then((querySnapshot) => {
       querySnapshot.forEach((doc) => {
         // doc.data() is never undefined for query doc snapshots
-        console.log(doc.id, ' => ', doc.data());
-        // <tr>
-        //   <th scope="row">1</th>
-        //   <td>Mark</td>
-        //   <td>Otto</td>
-        //   <td>@mdo</td>
-        //   <td>5</td>
-        // </tr>;
+        //console.log(doc.id, ' => ', doc.data());
+        
         // Create the tr
-        const tr = $('<tr>');
+        let tr = $('<tr>');
 
         // Create the tds for each field
-        const td = $('<td>');
+        let tdName = $('<td>');
+        let tdDest = $('<td>');
+        let tdFreq = $('<td>');
+        let tdArr = $('<td>');
+        let tdMins = $('<td>');
 
-        // Add the id attribute
-        td.attr('id', 'name-' + counter);
+        //Display the data from Firebase
+        tdName.html(doc.data().name);
+        tdDest.html(doc.data().destination);
+        tdFreq.html(doc.data().frequency);
 
-        // Add the name to this td
-        // td.html(doc.data().name);
+        //Calculate the next arrival
+        //Get the first arrival
+        let timeStart = doc.data().time;
+        //console.log(timeStart);
 
-        $('#name-1').html('test');
+         // Get today
+         let today = moment().format('YYYY-MM-DD');
+         //Add the time to the current date
+         today = today + " " + timeStart;
+         //console.log(today);
+         //Make it a valid date
+         let newDate = moment(today).toISOString();
+         //console.log(newDate);
 
-        // td = $('<td>');
-        // Add the destination to this td
-        // td.html(doc.data().destination);
+        //Add the frequency to get Arrival Time
+        let freq = doc.data().frequency;
+        let arrivalTime = moment(newDate).add(freq, 'min');       
+        //console.log(arrivalTime._d);
+        //Get the time from the result and Format
+        let arrTimeNew = arrivalTime._d;
+        arrTimeNew = moment(arrTimeNew).format('LT');//2:25 PM
+        console.log(arrTimeNew);
+        
+        //Display the Next Arrival 
+        tdArr.html(arrTimeNew);
 
-        // Append the td to the tr
-        tr.append(td);
+        //Get mins away
+        let away = moment(arrivalTime._d).fromNow(); 
+        console.log(away);
+
+        //Difference between arrival time and now
+        var a = moment(arrivalTime._d);
+        var b = moment();
+        let timeDiff = a.diff(b, 'minutes');
+        console.log(timeDiff);
+        
+        //Check if Train Arrival Time has passed
+        if (timeDiff <= 0){
+           console.log("Arrival has Passed");
+           //Need to increment the next arrival
+           //Add freq to now
+           let newArrivalTime = moment().add(freq, 'min');
+           //Format and Display
+           newArrivalTime = moment(newArrivalTime).format('LT');//2:25 PM
+           console.log("New Arrival Time: " + newArrivalTime);
+           tdArr.html(newArrivalTime);
+           //Recalculate minutes away!!!!!!!!!!Need a function, don't repeat code
+         }else{
+           console.log("Arrival is in Future"); //Can delete this???????    
+         }
+        
+        //Display the Minutes Away
+        tdMins.html(away);
+        
+        // Append the tds to the tr
+        tr.append(tdName, tdDest, tdFreq, tdArr, tdMins);
 
         // Append the tr to the tbody
         $('tbody').append(tr);
 
+
         // increment the counter
-        counter++;
+        //counter++;
       });
     });
 }); // End Document Ready
@@ -160,4 +191,4 @@ $(document).ready(() => {
 // 4. Get all the trains from the db
 // 5. Calculate next arrival time, by getting the 'time' from the db and add frequency mins to that time using moment.js
 // 6. Calculate Minutes away look at Arrival Time calculated and current time and get difference using moment.js
-// 7. If Minutes away is <= 0, alert with train arrived and delete 1 min after arrival time
+// 7. If Minutes away is <=0, update with next arrival time
