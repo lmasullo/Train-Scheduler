@@ -54,6 +54,10 @@ $(document).ready(() => {
       .catch((error) => {
         console.error('Error adding document: ', error);
       });
+
+      //Refresh the page after new entry
+      location.reload();
+
   } // End add train function
 
   // Click Submit Button
