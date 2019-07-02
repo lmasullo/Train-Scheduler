@@ -1,3 +1,5 @@
+/* eslint-disable max-len */
+/* eslint-disable no-underscore-dangle */
 /* eslint-disable prefer-template */
 /* eslint-disable no-undef */
 /* eslint-disable no-template-curly-in-string */
@@ -8,7 +10,7 @@ $(document).ready(() => {
   console.log('Document is Ready!');
 
   // Setup Variables
-  //* ********************************************
+  // *********************************************
 
   // Initialize Cloud Firestore through Firebase
   firebase.initializeApp({
@@ -26,26 +28,27 @@ $(document).ready(() => {
   let trainArrival = '';
   let trainFreq = 0;
 
-  // Counter for firebase return querySnapShot
-  //let counter = 0;
-
-  
+  // Get today
+  const today = moment().format('YYYY-MM-DD');
+  console.log('Today: ' + today);
 
   // Functions
-  //* **********************************************
+  // ***********************************************
 
   // Function to add a train to the db
   function addTrain(name, destination, time, frequency) {
+    // add today to the time entered on the form
+    dateCombined = today + ' ' + time;
+
     db.collection('trains')
       .add({
         name,
         destination,
-        time,
+        dateCombined,
         frequency,
       })
       .then((docRef) => {
         // console.log(docRef);
-
         console.log(`Document written with ID: ${docRef.id}`);
       })
       .catch((error) => {
@@ -84,110 +87,110 @@ $(document).ready(() => {
   });
 
   // Main Processes
-  //* ******************************************************
-
-  // db.collection('trains')
-  //   .get()
-  //   .then((querySnapshot) => {
-  //     querySnapshot.forEach((doc) => {
-  //       // console.log(`${doc.id} => ${doc.data()}`);
-  //       console.log(doc);
-  //     });
-  //   });
+  // *******************************************************
 
   db.collection('trains')
     .get()
     .then((querySnapshot) => {
       querySnapshot.forEach((doc) => {
         // doc.data() is never undefined for query doc snapshots
-        //console.log(doc.id, ' => ', doc.data());
-        
+        console.log(doc.id, ' => ', doc.data());
+
         // Create the tr
-        let tr = $('<tr>');
+        const tr = $('<tr>');
 
         // Create the tds for each field
-        let tdName = $('<td>');
-        let tdDest = $('<td>');
-        let tdFreq = $('<td>');
-        let tdArr = $('<td>');
-        let tdMins = $('<td>');
+        const tdName = $('<td>');
+        const tdDest = $('<td>');
+        const tdFreq = $('<td>');
+        const tdArr = $('<td>');
+        const tdMins = $('<td>');
 
-        //Display the data from Firebase
+        // Display the data from Firebase
         tdName.html(doc.data().name);
         tdDest.html(doc.data().destination);
         tdFreq.html(doc.data().frequency);
 
-        //Calculate the next arrival
-        //Get the first arrival, it doesn't have the day, just the time
-        let timeStart = doc.data().time;
-        //console.log(timeStart);
+        // Function to calculate the arrival time and mins away
+        function calcArrival(timeStart) {
+          // Add the time to the current date
+          // today = today + ' ' + timeStart;
+          console.log('Time passed to function: ' + timeStart);
 
-         // Get today
-         let today = moment().format('YYYY-MM-DD');
-         //Add the time to the current date
-         today = today + " " + timeStart;
-         //console.log(today);
-         //Make it a valid date
-         let newDate = moment(today).toISOString();
-         //console.log(newDate);
+          // console.log(today);
+          // Make it a valid date
+          const newStart = moment(timeStart).toISOString();
+          console.log('To ISO: ' + newStart);
 
-        //Add the frequency to get Arrival Time
-        let freq = doc.data().frequency;
-        let arrivalTime = moment(newDate).add(freq, 'min');       
-        //console.log(arrivalTime._d);
-        //Get the time from the result and Format
-        let arrTimeNew = arrivalTime._d;
-        arrTimeNew = moment(arrTimeNew).format('LT');//2:25 PM
-        console.log(arrTimeNew);
-        
-        //Display the Next Arrival 
-        tdArr.html(arrTimeNew);
+          // Add the frequency to get Arrival Time
+          const freq = doc.data().frequency;
+          let arrivalTime = moment(newStart).add(freq, 'minutes');
+          arrivalTime = moment(arrivalTime._d).format('LT'); // 2:25 PM;
 
-        //Get mins away
-        let away = moment(arrivalTime._d).fromNow(); 
+          // arrTimeNew = moment(arrTimeNew).format('LT'); // 2:25 PM
+          console.log('Arrival Time to Display: ' + arrivalTime);
+
+          // Get the time from the result and Format
+          // let arrTimeNew = arrivalTime._d;
+          //
+          // console.log(arrTimeNew);
+
+          // Display the Next Arrival
+          tdArr.html(arrivalTime);
+
+          return arrivalTime;
+        }
+
+        // Calculate the next arrival
+        // Get the first arrival, it doesn't have the day, just the time
+        const timeStart = doc.data().time;
+        console.log('From the db: ' + timeStart);
+
+        // Call the calcArrival function
+        arrivalTime = calcArrival(timeStart);
+
+        // Get mins away
+        const away = moment(arrivalTime._d).fromNow();
         console.log(away);
 
-        //Difference between arrival time and now
-        var a = moment(arrivalTime._d);
-        var b = moment();
-        let timeDiff = a.diff(b, 'minutes');
-        console.log(timeDiff);
-        
-        //Check if Train Arrival Time has passed
-        if (timeDiff <= 0){
-           console.log("Arrival has Passed");
-           //Need to increment the next arrival
-           //Add freq to now
-           let newArrivalTime = moment().add(freq, 'min');
-           //Format and Display
-           newArrivalTime = moment(newArrivalTime).format('LT');//2:25 PM
-           console.log("New Arrival Time: " + newArrivalTime);
-           tdArr.html(newArrivalTime);
-           //Recalculate minutes away!!!!!!!!!!Need a function, don't repeat code
-           //Get mins away
-           //let awayNew = moment(newArrivalTime).fromNow(); 
-           //console.log(awayNew);
-           
-           //Display the Minutes Away
-           //tdMins.html(away);
-
-
-         }else{
-           console.log("Arrival is in Future"); //Can delete this???????    
-         }
-        
-        //Display the Minutes Away
+        // Display the Minutes Away
         tdMins.html(away);
-        
+
+        // Difference between arrival time and now
+        const a = moment(arrivalTime._d);
+        const b = moment();
+        const timeDiff = a.diff(b, 'minutes');
+        console.log(timeDiff);
+
+        // Check if Train Arrival Time has passed
+        if (timeDiff <= 0) {
+          console.log('Arrival has Passed');
+          // Need to increment the next arrival
+          // Update the db with the new start time, now
+          const trainsColl = db.collection('trains').doc(doc.id);
+          updateTime = moment().format('YYYY-MM-DD HH:mm');
+          console.log('Update Time: ' + updateTime);
+
+          // Update the start time
+          return trainsColl
+            .update({
+              time: arrivalTime,
+            })
+            .then(() => {
+              console.log('Document successfully updated!');
+            })
+            .catch((error) => {
+              // The document probably doesn't exist.
+              console.error('Error updating document: ', error);
+            });
+        }
+        console.log('Arrival is in Future'); // Can delete this???????
+
         // Append the tds to the tr
         tr.append(tdName, tdDest, tdFreq, tdArr, tdMins);
 
         // Append the tr to the tbody
         $('tbody').append(tr);
-
-
-        // increment the counter
-        //counter++;
       });
     });
 }); // End Document Ready
@@ -201,3 +204,6 @@ $(document).ready(() => {
 // 6. Calculate Minutes away look at Arrival Time calculated and current time and get difference using moment.js
 // 7. If Minutes away is <=0, update with next arrival time
 // 8. Refresh page every minute
+
+// Refresh the page
+// every time it loads
