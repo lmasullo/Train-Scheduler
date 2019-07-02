@@ -18,6 +18,12 @@ $(document).ready(() => {
     authDomain: 'train-maz.firebaseapp.com',
     projectId: 'train-maz',
   });
+  
+  //Set the clock
+  function update() {
+    $('#clock').html(' - '+ moment().format('MMMM D, YYYY H:mm:ss'));
+  }
+  setInterval(update, 1000);
 
   // Initialize the database
   const db = firebase.firestore();
@@ -28,6 +34,7 @@ $(document).ready(() => {
   let trainArrival = '';
   let trainFreq = 0;
 
+  
   // Get today
   const today = moment().format('YYYY-MM-DD');
   console.log('Today: ' + today);
@@ -37,30 +44,28 @@ $(document).ready(() => {
 
   // Function to add a train to the db
   function addTrain(name, destination, time, frequency) {
-    // add today to the time entered on the form
-    dateCombined = today + ' ' + time;
-
     db.collection('trains')
       .add({
         name,
         destination,
-        dateCombined,
+        time,
         frequency,
       })
       .then((docRef) => {
         // console.log(docRef);
         console.log(`Document written with ID: ${docRef.id}`);
+        
+        //Refresh the page after new entry
+        location.reload();
       })
       .catch((error) => {
         console.error('Error adding document: ', error);
+        //Display Error
+        $("#message").html("There was an Error adding a train!");
       });
-
-      //Refresh the page after new entry
-      location.reload();
-
   } // End add train function
 
-  // Click Submit Button
+  // Click Submit Button to Enter a Train 
   $('#btnSubmit').on('click', (e) => {
     console.log('Submit Clicked!');
 
@@ -84,11 +89,83 @@ $(document).ready(() => {
     console.log(trainName);
     console.log(trainDest);
     console.log(trainArrival);
+    //Add today to the time
+    trainArrival = today + ' ' + trainArrival;
+    console.log(typeof trainArrival);
     console.log(trainFreq);
 
     // Call the addTrain function
     addTrain(trainName, trainDest, trainArrival, trainFreq);
   });
+
+  // Function to calculate the arrival time and mins away
+  function calcArrival(timeStart, freq, docID) {
+    // Add the time to the current date
+    // today = today + ' ' + timeStart;
+    console.log('Time passed into function: ' + timeStart + ' and the Frequency: ' + freq);
+
+    //Create the array to hold the Arrival and Mins away values
+    let arrVals = [];
+
+    // Make it a valid date
+    const newStart = moment(timeStart).toISOString();
+    console.log('To ISO: ' + newStart);
+
+    // Add the frequency to get Arrival Time and then Format  
+    let arrivalTime = moment(newStart).add(freq, 'minutes');
+    console.log("Result after adding frequency to first arrival: " + arrivalTime);
+
+    // Get the Difference in minutes between arrival time and now
+    const a = moment(arrivalTime);
+    console.log("A !!!!: "+ a);
+    //Now
+    const b = moment();
+    console.log("B !!!!: "+ b);
+    const timeDiff = a.diff(b, 'minutes');
+    console.log("Minute Diff: " + timeDiff);
+
+    //Check if arrival has passed
+    if (timeDiff <= 0) {
+      console.log('Arrival has Passed');
+      // Update the db with the new start time, now
+      const trainsColl = db.collection('trains').doc(docID);
+      updateTime = moment().format('YYYY-MM-DD HH:mm');
+      console.log('Update Time: ' + updateTime);
+
+      //new Arrival time after update
+      arrivalTime = moment().add(freq, 'minutes');
+      console.log("New Arrival after Update: " + arrivalTime);
+      
+      // Update the start time
+      trainsColl
+        .update({
+          time: updateTime,
+        })
+        .then(() => {
+          console.log('Document successfully updated!');
+        });
+
+    }else{
+      console.log('Arrival Time is in the Future');
+    }//End check if arrival has passed
+
+
+    //Push Arrival Time to the array
+    arrVals.push(arrivalTime);
+
+    //Now calculate the minutes away
+    const away = moment(arrivalTime).fromNow();
+    console.log("Mins Away: " + away);
+
+    //Push Mins Away to the array
+    arrVals.push(away);
+
+    console.log(arrVals);
+    
+
+    //Return the array of Arrival and mins away
+    return arrVals;
+  }
 
   // Main Processes
   // *******************************************************
@@ -103,7 +180,7 @@ $(document).ready(() => {
         // Create the tr
         const tr = $('<tr>');
 
-        // Create the tds for each field
+        //Create the tds
         const tdName = $('<td>');
         const tdDest = $('<td>');
         const tdFreq = $('<td>');
@@ -113,98 +190,36 @@ $(document).ready(() => {
         // Display the data from Firebase
         tdName.html(doc.data().name);
         tdDest.html(doc.data().destination);
-        tdFreq.html(doc.data().frequency);
-
-        // Function to calculate the arrival time and mins away
-        function calcArrival(timeStart) {
-          // Add the time to the current date
-          // today = today + ' ' + timeStart;
-          console.log('Time passed into function: ' + timeStart);
-
-          // console.log(today);
-          // Make it a valid date
-          const newStart = moment(timeStart).toISOString();
-          console.log('To ISO: ' + newStart);
-
-          // Add the frequency to get Arrival Time
-          const freq = doc.data().frequency;
-          console.log("Freq: " + freq);
-          
-          let arrivalTime = moment(newStart).add(freq, 'minutes');
-          let arrivalTimeFormatted = moment(arrivalTime._d).format('LT'); // 2:25 PM;
-
-          // arrTimeNew = moment(arrTimeNew).format('LT'); // 2:25 PM
-          console.log('Arrival Time to Display: ' + arrivalTimeFormatted);
-
-          // Get the time from the result and Format
-          // let arrTimeNew = arrivalTime._d;
-          //
-          // console.log(arrTimeNew);
-
-          // Display the Next Arrival
-          tdArr.html(arrivalTimeFormatted);
-
-          return arrivalTime ;
-        }
-
+        let freq = doc.data().frequency;
+        tdFreq.html(freq);
+        
         // Calculate the next arrival
-        // Get the first arrival, it doesn't have the day, just the time
+        // Get the first arrival and freq
         const timeStart = doc.data().time;
-        console.log('From the db: ' + timeStart);
+        console.log('From the db - First Arrival: ' + timeStart + ' Frequency: ' + freq);
 
         // Call the calcArrival function
-        arrivalTime = calcArrival(timeStart);
-
-        console.log("Returned from calc funct: " + arrivalTime);
+        arrivalTime = calcArrival(timeStart, freq, doc.id);
         
+        //Response from calcArrival, has an array of arrival time and mins away
+        console.log(arrivalTime);
 
-        // Get mins away
-        const away = moment(arrivalTime).fromNow();
-        console.log("Mins Away: " + away);
+        let arrivalTimeFormatted = moment(arrivalTime[0]).format('LT'); // 2:25 PM;
+        console.log('Arrival Time to Display: ' + arrivalTimeFormatted);
 
-        // Display the Minutes Away
-        tdMins.html(away);
-
-        // Difference in minutes between arrival time and now
-        const a = moment(arrivalTime);
-        //Now
-        const b = moment();
-        const timeDiff = a.diff(b, 'minutes');
-        console.log("Min Diff: " + timeDiff);
-
-        // Check if Train Arrival Time has passed
-        if (timeDiff <= 0) {
-          console.log('Arrival has Passed');
-          // Need to increment the next arrival
-          // Update the db with the new start time, now
-          const trainsColl = db.collection('trains').doc(doc.id);
-          updateTime = moment().format('YYYY-MM-DD HH:mm');
-          console.log('Update Time: ' + updateTime);
-
-          // Update the start time
-          return trainsColl
-            .update({
-              time: updateTime,
-            })
-            .then(() => {
-              console.log('Document successfully updated!');
-            })
-            .catch((error) => {
-              // The document probably doesn't exist.
-              console.error('Error updating document: ', error);
-            });
-        }else{
-          console.log('Arrival is in Future'); // Can delete this???????
-        }
+        // Set the Next Arrival
+        tdArr.html(arrivalTimeFormatted);
         
+        // Set the Minutes Away
+        tdMins.html(arrivalTime[1]);
 
         // Append the tds to the tr
         tr.append(tdName, tdDest, tdFreq, tdArr, tdMins);
 
         // Append the tr to the tbody
         $('tbody').append(tr);
-      });
-    });
+      });//End forEach loop over trains
+    });//End .get from db
 }); // End Document Ready
 
 // Pseudocode
@@ -216,3 +231,52 @@ $(document).ready(() => {
 // 6. Calculate Minutes away look at Arrival Time calculated and current time and get difference using moment.js
 // 7. If Minutes away is <=0, update the db with current time and then the new arrival time will be calculated
 // 8. Refresh page every minute
+
+
+
+    // // Get the Difference in minutes between arrival time and now
+    // const a = moment(arrivalTime);
+    // console.log("A !!!!: "+ a);
+
+    // //Now
+    // const b = moment();
+    // console.log("B !!!!: "+ b);
+
+    // const timeDiff = a.diff(b, 'minutes');
+    // console.log("Minute Diff: " + timeDiff);
+
+    // // Check if Train Arrival Time has passed
+    // if (timeDiff <= 0) {
+    //   console.log('Arrival has Passed');
+    //   // Need to increment the next arrival
+    //   // Update the db with the new start time, now
+    //   const trainsColl = db.collection('trains').doc(doc.id);
+    //   updateTime = moment().format('YYYY-MM-DD HH:mm');
+    //   console.log('Update Time: ' + updateTime);
+
+    //   // Update the start time
+    //   return trainsColl
+    //     .update({
+    //       time: updateTime,
+    //     })
+    //     .then(() => {
+    //       console.log('Document successfully updated!');
+          
+    //       //Recalculate Arrival Time
+    //       // Call the calcArrival function
+    //       arrivalTime = calcArrival(updateTime, freq);
+    //       console.log("Returned from calc funct: " + arrivalTime);
+          
+    //       let arrivalTimeFormatted = moment(arrivalTime._d).format('LT'); // 2:25 PM;
+
+    //       // arrTimeNew = moment(arrTimeNew).format('LT'); // 2:25 PM
+    //       console.log('Arrival Time to Display: ' + arrivalTimeFormatted);
+    //       console.log("New Arrival time after Update");
+    //     })
+    //     .catch((error) => {
+    //       // The document probably doesn't exist.
+    //       console.error('Error updating document: ', error);
+    //     });
+    // }else{
+    //   console.log('Arrival is in Future'); // Can delete this???????
+    // }//End Check if Arrival Time has passed
