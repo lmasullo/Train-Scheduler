@@ -115,7 +115,7 @@ $(document).ready(() => {
         function calcArrival(timeStart) {
           // Add the time to the current date
           // today = today + ' ' + timeStart;
-          console.log('Time passed to function: ' + timeStart);
+          console.log('Time passed into function: ' + timeStart);
 
           // console.log(today);
           // Make it a valid date
@@ -124,11 +124,13 @@ $(document).ready(() => {
 
           // Add the frequency to get Arrival Time
           const freq = doc.data().frequency;
+          console.log("Freq: " + freq);
+          
           let arrivalTime = moment(newStart).add(freq, 'minutes');
-          arrivalTime = moment(arrivalTime._d).format('LT'); // 2:25 PM;
+          let arrivalTimeFormatted = moment(arrivalTime._d).format('LT'); // 2:25 PM;
 
           // arrTimeNew = moment(arrTimeNew).format('LT'); // 2:25 PM
-          console.log('Arrival Time to Display: ' + arrivalTime);
+          console.log('Arrival Time to Display: ' + arrivalTimeFormatted);
 
           // Get the time from the result and Format
           // let arrTimeNew = arrivalTime._d;
@@ -136,9 +138,9 @@ $(document).ready(() => {
           // console.log(arrTimeNew);
 
           // Display the Next Arrival
-          tdArr.html(arrivalTime);
+          tdArr.html(arrivalTimeFormatted);
 
-          return arrivalTime;
+          return arrivalTime ;
         }
 
         // Calculate the next arrival
@@ -149,18 +151,22 @@ $(document).ready(() => {
         // Call the calcArrival function
         arrivalTime = calcArrival(timeStart);
 
+        console.log("Returned from calc funct: " + arrivalTime);
+        
+
         // Get mins away
-        const away = moment(arrivalTime._d).fromNow();
-        console.log(away);
+        const away = moment(arrivalTime).fromNow();
+        console.log("Mins Away: " + away);
 
         // Display the Minutes Away
         tdMins.html(away);
 
-        // Difference between arrival time and now
-        const a = moment(arrivalTime._d);
+        // Difference in minutes between arrival time and now
+        const a = moment(arrivalTime);
+        //Now
         const b = moment();
         const timeDiff = a.diff(b, 'minutes');
-        console.log(timeDiff);
+        console.log("Min Diff: " + timeDiff);
 
         // Check if Train Arrival Time has passed
         if (timeDiff <= 0) {
@@ -174,7 +180,7 @@ $(document).ready(() => {
           // Update the start time
           return trainsColl
             .update({
-              time: arrivalTime,
+              time: updateTime,
             })
             .then(() => {
               console.log('Document successfully updated!');
@@ -183,8 +189,10 @@ $(document).ready(() => {
               // The document probably doesn't exist.
               console.error('Error updating document: ', error);
             });
+        }else{
+          console.log('Arrival is in Future'); // Can delete this???????
         }
-        console.log('Arrival is in Future'); // Can delete this???????
+        
 
         // Append the tds to the tr
         tr.append(tdName, tdDest, tdFreq, tdArr, tdMins);
@@ -202,8 +210,5 @@ $(document).ready(() => {
 // 4. Get all the trains from the db
 // 5. Calculate next arrival time, by getting the 'time' from the db and add frequency mins to that time using moment.js
 // 6. Calculate Minutes away look at Arrival Time calculated and current time and get difference using moment.js
-// 7. If Minutes away is <=0, update with next arrival time
+// 7. If Minutes away is <=0, update the db with current time and then the new arrival time will be calculated
 // 8. Refresh page every minute
-
-// Refresh the page
-// every time it loads
