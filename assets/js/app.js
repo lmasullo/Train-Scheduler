@@ -190,6 +190,9 @@ $(document).ready(() => {
             //Make the Edit button visible
             $("#btnEdit").removeAttr("hidden");
 
+            //Make the Delete button visible
+            $("#btnDel").removeAttr("hidden");
+
         } else {
             // doc.data() will be undefined in this case
             console.log("No such document!");
@@ -246,6 +249,37 @@ $(document).ready(() => {
       location.reload();
     });//End update record
   });//End Button Edit
+
+  // Button Delete Click Function
+  $("#btnDel").on("click", function(e){
+    // Prevent submit
+    e.preventDefault();
+
+    console.log("Delete Clicked");
+
+    //Get the train id
+    trainID = $('#txtDocID')
+    .val()
+    .trim();
+
+    //Set the reference to the document
+    var docRef = db.collection("trains").doc(trainID);
+    //Update the train info
+    docRef.delete()
+    .then(() => {
+      console.log('Document successfully Deleted!');
+
+      //Display Updated
+      $("#message").html("Record Deleted!");
+
+      //Refresh the page after new entry
+      location.reload();
+    }).catch(function(error) {
+      console.error("Error removing document: ", error);
+      //Display Updated
+      $("#message").html("Error Deleting the Record!");
+    });//End Delete record
+  });//End Button Delete
 
   // Main Processes
   // *******************************************************
