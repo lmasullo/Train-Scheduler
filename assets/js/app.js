@@ -94,7 +94,7 @@ $(document).ready(() => {
 
     // Call the addTrain function
     addTrain(trainName, trainDest, trainArrival, trainFreq);
-  });
+  });//End Submit Train Butto Clicked
 
   // Function to calculate the arrival time and mins away
   function calcArrival(timeStart, freq, docID) {
@@ -157,32 +157,32 @@ $(document).ready(() => {
 
     //Return the array of Arrival and mins away
     return arrVals;
-  }
+  }//End Calculate Arrival
 
   // Edit Link Click Function
   $(document).on("click", "a", function(e){
     // Prevent submit
     e.preventDefault();
 
-    //$(this).text("It works!");
     console.log("a clicked!");
-    console.log($(this).attr("data-docID"));
+
+    //Get the document id
     let docID = $(this).attr("data-docID");
 
+    //Set the reference to the document
     var docRef = db.collection("trains").doc(docID);
-
     docRef.get().then(function(doc) {
         if (doc.exists) {
             console.log("Document data:", doc.data());
 
             //Fill in the form
             $("#txtName").val(doc.data().name);
-            $("#txtDest").val(doc.data().destination);
+            $("#txtDest").val(doc.data().destination);  
             //Format the time
             let txtTimeFormatted = moment(doc.data().time).format("HH:mm");
-            console.log(txtTimeFormatted);
             $("#txtTime").val(txtTimeFormatted);
             $("#txtFreq").val(doc.data().frequency);
+            $("#txtDocID").val(doc.id);
 
             // Make the Submit button hidden
             $("#btnSubmit").hide();
@@ -193,56 +193,59 @@ $(document).ready(() => {
         } else {
             // doc.data() will be undefined in this case
             console.log("No such document!");
-        }
+            $("#message").html("The Record Doesn't Exist!");
+        }//End Check for document
     }).catch(function(error) {
         console.log("Error getting document:", error);
-    });
+        $("#message").html("Can't Get the Record!");
+    });// Get the record function
+  });//End Click on Edit Link
 
+  // Button Edit Click Function
+  $("#btnEdit").on("click", function(e){
+    // Prevent submit
+    e.preventDefault();
 
-    // Button Edit Click Function
-    $("#btnEdit").on("click", function(e){
-      // Prevent submit
-      e.preventDefault();
+    console.log("Edit Clicked");
 
-      console.log("Edit Clicked");
+    // Get the values from the form
+    trainName = $('#txtName')
+      .val()
+      .trim();
+    trainDest = $('#txtDest')
+      .val()
+      .trim();
+    trainArrival = $('#txtTime')
+      .val()
+      .trim();
+    trainFreq = $('#txtFreq')
+      .val()
+      .trim();
+    trainID = $('#txtDocID')
+    .val()
+    .trim();
 
-      // Get the values from the form
-        trainName = $('#txtName')
-        .val()
-        .trim();
-      trainDest = $('#txtDest')
-        .val()
-        .trim();
-      trainArrival = $('#txtTime')
-        .val()
-        .trim();
-      trainFreq = $('#txtFreq')
-        .val()
-        .trim();
+    //Add today to the time
+    trainArrival = today + ' ' + trainArrival;
+    //Set the reference to the document
+    var docRef = db.collection("trains").doc(trainID);
+    //Update the train info
+    docRef.update({
+      name: trainName,
+      destination: trainDest,
+      frequency: trainFreq,
+      time: trainArrival,
+    })
+    .then(() => {
+      console.log('Document successfully updated!');
 
-      //Add today to the time
-      trainArrival = today + ' ' + trainArrival;
+      //Display Updated
+      $("#message").html("Record Updated!");
 
-      //Update the train info
-      docRef.update({
-        name: trainName,
-        destination: trainDest,
-        frequency: trainFreq,
-        time: trainArrival,
-      })
-      .then(() => {
-        console.log('Document successfully updated!');
-
-        //Display Error
-        $("#message").html("Record Updated!");
-
-        //Refresh the page after new entry
-        location.reload();
-      });
-      
-    
-    });
-  });
+      //Refresh the page after new entry
+      location.reload();
+    });//End update record
+  });//End Button Edit
 
   // Main Processes
   // *******************************************************
