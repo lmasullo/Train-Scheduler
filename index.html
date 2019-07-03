@@ -5,13 +5,18 @@
   <!-- Required meta tags -->
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
   <!-- Refresh page every 30 seconds -->
   <meta http-equiv="refresh" content="60" />
+
+  <!-- Normalize CSS -->
+  <link rel="stylesheet" href="assets/css/normalize.css" />
 
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
     integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous" />
 
+  <!-- Custom CSS -->
   <link rel="stylesheet" href="assets/css/styles.css" />
 
   <title>Train Scheduler</title>
@@ -26,6 +31,7 @@
       <p class="lead">Choo Choo. Chee Chee.</p>
     </div>
 
+    <!-- Message Div -->
     <div id="message"></div>
 
     <!-- Train Schedule Card div -->
@@ -39,6 +45,7 @@
         <table class="table table-striped">
           <thead>
             <tr>
+              <th scope="col">Click<br>to Edit</th>
               <th scope="col">Train Name</th>
               <th scope="col">Destination</th>
               <th scope="col">Frequency (min)</th>
@@ -63,26 +70,27 @@
         <form>
           <div class="form-group">
             <label for="trainName">Train Name</label>
-            <input type="text" id="txtName" class="form-control" id="trainName" placeholder="Enter Train Name" />
+            <input type="text" id="txtName" class="form-control" placeholder="Enter Train Name" />
           </div>
           <div class="form-group">
             <label for="destination">Destination</label>
-            <input type="text" id="txtDest" class="form-control" id="destination"
-              placeholder="Enter the Train's Destination" />
+            <input type="text" id="txtDest" class="form-control" placeholder="Enter the Train's Destination" />
           </div>
 
           <div class="form-group">
             <label for="trainTime">First Train Time (e.g. 11:00 AM)</label>
-            <input type="time" id="txtTime" class="form-control" id="trainTime" />
+            <input type="time" id="txtTime" class="form-control" />
           </div>
 
           <div class="form-group">
             <label for="frequency">Frequency (min)</label>
-            <input type="text" id="txtFreq" class="form-control" id="frequency"
-              placeholder="Enter How Often the Train Arrives" />
+            <input type="text" id="txtFreq" class="form-control" placeholder="Enter How Often the Train Arrives" />
           </div>
           <button type="submit" id="btnSubmit" class="btn btn-primary">
             Submit
+          </button>
+          <button type="button" id="btnEdit" class="btn btn-primary" hidden>
+            Submit Changes
           </button>
         </form>
         <!-- End Card Body -->
@@ -92,7 +100,7 @@
     <!-- End Main Div -->
   </div>
 
-  <!-- Optional JavaScript -->
+  <!-- JavaScript -->
   <!-- jQuery first, then Popper.js, then Bootstrap JS -->
   <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
     integrity="sha256-pasqAKBDmFT4eHoN2ndd6lN370kFiGUFyTiUHWhU7k8=" crossorigin="anonymous"></script>

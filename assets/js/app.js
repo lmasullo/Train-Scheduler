@@ -33,6 +33,7 @@ $(document).ready(() => {
   let trainDest = '';
   let trainArrival = '';
   let trainFreq = 0;
+  let counter = 0;
 
   // Get today
   const today = moment().format('YYYY-MM-DD');
@@ -158,6 +159,91 @@ $(document).ready(() => {
     return arrVals;
   }
 
+  // Edit Link Click Function
+  $(document).on("click", "a", function(e){
+    // Prevent submit
+    e.preventDefault();
+
+    //$(this).text("It works!");
+    console.log("a clicked!");
+    console.log($(this).attr("data-docID"));
+    let docID = $(this).attr("data-docID");
+
+    var docRef = db.collection("trains").doc(docID);
+
+    docRef.get().then(function(doc) {
+        if (doc.exists) {
+            console.log("Document data:", doc.data());
+
+            //Fill in the form
+            $("#txtName").val(doc.data().name);
+            $("#txtDest").val(doc.data().destination);
+            //Format the time
+            let txtTimeFormatted = moment(doc.data().time).format("HH:mm");
+            console.log(txtTimeFormatted);
+            $("#txtTime").val(txtTimeFormatted);
+            $("#txtFreq").val(doc.data().frequency);
+
+            // Make the Submit button hidden
+            $("#btnSubmit").hide();
+
+            //Make the Edit button visible
+            $("#btnEdit").removeAttr("hidden");
+
+        } else {
+            // doc.data() will be undefined in this case
+            console.log("No such document!");
+        }
+    }).catch(function(error) {
+        console.log("Error getting document:", error);
+    });
+
+
+    // Button Edit Click Function
+    $("#btnEdit").on("click", function(e){
+      // Prevent submit
+      e.preventDefault();
+
+      console.log("Edit Clicked");
+
+      // Get the values from the form
+        trainName = $('#txtName')
+        .val()
+        .trim();
+      trainDest = $('#txtDest')
+        .val()
+        .trim();
+      trainArrival = $('#txtTime')
+        .val()
+        .trim();
+      trainFreq = $('#txtFreq')
+        .val()
+        .trim();
+
+      //Add today to the time
+      trainArrival = today + ' ' + trainArrival;
+
+      //Update the train info
+      docRef.update({
+        name: trainName,
+        destination: trainDest,
+        frequency: trainFreq,
+        time: trainArrival,
+      })
+      .then(() => {
+        console.log('Document successfully updated!');
+
+        //Display Error
+        $("#message").html("Record Updated!");
+
+        //Refresh the page after new entry
+        location.reload();
+      });
+      
+    
+    });
+  });
+
   // Main Processes
   // *******************************************************
   
@@ -169,17 +255,27 @@ $(document).ready(() => {
         // doc.data() is never undefined for query doc snapshots
         console.log(doc.id, ' => ', doc.data());
 
+        //Increment the counter
+        counter++;
+
         // Create the tr
         const tr = $('<tr>');
 
         //Create the tds
+        const tdNum = $('<td>');
         const tdName = $('<td>');
         const tdDest = $('<td>');
         const tdFreq = $('<td>');
         const tdArr = $('<td>');
         const tdMins = $('<td>');
 
+        //Create the <a>
+        let aNum = $("<a href='#'>"+counter+"</a>");
+        //Add the docID to an attribute
+        aNum.attr("data-docID", doc.id);
+
         // Set the data to display from Firebase
+        tdNum.html(aNum);
         tdName.html(doc.data().name);
         tdDest.html(doc.data().destination);
         let freq = doc.data().frequency;
@@ -207,7 +303,7 @@ $(document).ready(() => {
         tdMins.html(arrivalTime[1]);
 
         // Append the tds to the tr
-        tr.append(tdName, tdDest, tdFreq, tdArr, tdMins);
+        tr.append(tdNum, tdName, tdDest, tdFreq, tdArr, tdMins);
 
         // Append the tr to the tbody
         $('tbody').append(tr);
