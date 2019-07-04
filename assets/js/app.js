@@ -264,7 +264,7 @@ $(document).ready(() => {
 
     //Set the reference to the document
     var docRef = db.collection("trains").doc(trainID);
-    //Update the train info
+    //Delete the train info
     docRef.delete()
     .then(() => {
       console.log('Document successfully Deleted!');
