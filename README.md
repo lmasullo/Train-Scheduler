@@ -24,11 +24,11 @@ To deploy this on a live system, just upload the included files to your server.
 
 ## Built With
 
-HTML, CSS, and vanilla Javascript
+HTML, CSS, jQuery, and Firestore
 
 ## Demo
 
-https://lmasullo.github.io/Word-Guess/
+https://lmasullo.github.io/Train-Scheduler/
 
 ## Versioning
 
