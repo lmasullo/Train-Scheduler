@@ -4,8 +4,7 @@ Train Scheduler
 
 > Description:
 
-This is a challenging hangman game.
-Press any key to get started. The game will track your guesses. Remember you only get 12 tries!
+Need to know when the next train is coming in? This is your app! Enter the Train Name, Destination, Arrival Time, and Frequency and it will keep track of all the arrivals.
 
 ## Getting Started
 
